@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Timeline Service</title>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@500&display=swap" rel="stylesheet">
+
+    <style>
+        @import url(//spoqa.github.io/spoqa-han-sans/css/SpoqaHanSans-kr.css);
+
+        body {
+            margin: 0px;
+        }
+
+        .wrap {
+            width: 538px;
+            margin: 10px auto;
+        }
+
+        #contents {
+            width: 538px;
+        }
+
+        .background-header {
+            position: fixed;
+            z-index: -1;
+            top: 0px;
+            width: 100%;
+            height: 428px;
+            background-color: #339af0;
+        }
+
+        .background-body {
+            position: fixed;
+            z-index: -1;
+            top: 428px;
+            height: 100%;
+            width: 100%;
+            background-color: #dee2e6;
+        }
+
+        .header {
+            margin-top: 50px;
+        }
+
+        .header h2 {
+            font-family: 'Noto Sans KR', sans-serif;
+            height: 33px;
+            font-size: 42px;
+            font-weight: 500;
+            font-stretch: normal;
+            font-style: normal;
+            line-height: 0.79;
+            letter-spacing: -0.5px;
+            text-align: center;
+            color: #ffffff;
+        }
+
+        .header p {
+            margin: 40px auto;
+            width: 217px;
+            height: 48px;
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 16px;
+            font-weight: 500;
+            font-stretch: normal;
+            font-style: normal;
+            line-height: 1.5;
+            letter-spacing: -1.12px;
+            text-align: center;
+            color: #ffffff;
+        }
+
+        textarea.field {
+            width: 502px !important;
+            height: 146px;
+            border-radius: 5px;
+            background-color: #ffffff;
+            border: none;
+            padding: 18px;
+            resize: none;
+        }
+
+        textarea.field::placeholder {
+            width: 216px;
+            height: 16px;
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 16px;
+            font-weight: normal;
+            font-stretch: normal;
+            font-style: normal;
+            line-height: 1;
+            letter-spacing: -0.96px;
+            text-align: left;
+            color: #868e96;
+        }
+
+        .button {
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 20px;
+            color: white;
+            text-align: center;
+            height: 40px;
+            width: 538px;
+            border-radius: 5px;
+            background-color: #adb5bd;
+            margin-bottom: 12px;
+        }
+
+        .card {
+            min-height: 80px;
+            width: 538px;
+            border-radius: 5px;
+            background-color: #ffffff;
+            margin-bottom: 12px;
+        }
+
+        .card .metadata {
+            position: relative;
+            display: flex;
+            font-family: 'Spoqa Han Sans';
+            font-size: 11px;
+            font-weight: normal;
+            font-stretch: normal;
+            font-style: normal;
+            line-height: 1;
+            letter-spacing: -0.77px;
+            text-align: left;
+            color: #adb5bd;
+            height: 14px;
+            padding: 10px 23px;
+        }
+
+        .card .metadata .username {
+            margin-left: 20px;
+        }
+
+        .contents {
+            padding: 0px 23px;
+            word-wrap: break-word;
+            word-break: break-all;
+        }
+
+        .contents div.edit {
+            display: none;
+        }
+
+        .contents textarea.te-edit {
+            border-right: none;
+            border-top: none;
+            border-left: none;
+            resize: none;
+            border-bottom: 1px solid #212529;
+            width: 100%;
+            font-family: 'Spoqa Han Sans';
+        }
+
+        #cards-box {
+            margin-top: 12px;
+        }
+    </style>
+    <script>
+        $(document).ready(function () {
+            getMessages();
+        })
+
+        function getMessages() {
+            $('#cards-box').empty();
+            $.ajax({
+                type: 'GET',
+                url: '/api/blogs',
+                success: function (response) {
+                    console.log(response)
+                    for (let i = 0; i < response.length; i++) {
+                        let message = response[i];
+                        let id = message['id'];
+                        let username = message['username'];
+                        let subject = message['subject'];
+                        let contents = message['contents'];
+                        let modifiedAt = message['modifiedAt'];
+                        addHTML(id, username, subject, contents, modifiedAt);
+                    }
+                }
+            })
+        }
+
+        // 메모 하나를 HTML로 만들어서 body 태그 내 원하는 곳에 붙입니다.
+        function addHTML(id, username, subject, contents, modifiedAt) {
+            // 1. HTML 태그를 만듭니다.
+            let tempHtml = `<div class="card" onclick="location.href='/blogs/details/${id}'" style="cursor: pointer">
+                <!-- date/username 영역 -->
+                <div class="metadata">
+                    <div class="date">
+                        ${modifiedAt}
+                    </div>
+                    <div id="${id}-username" class="username">
+                        ${username}
+                    </div>
+                </div>
+                <!-- contents 조회/수정 영역-->
+                <div class="contents">
+                    <div id="${id}-subject" class="text">
+                        ${subject}
+                    </div>
+                </div>
+            </div>`;
+            // 2. #cards-box 에 HTML을 붙인다.
+            $('#cards-box').append(tempHtml);
+        }
+    </script>
+</head>
+
+<body>
+<div class="background-header">
+
+</div>
+<div class="background-body">
+
+</div>
+<div class="wrap">
+    <div class="header">
+
+        <div>
+            <div th:if="${#strings.isEmpty(nickname)}">
+                <form id="login_form" method="post" action="/members/login">
+                    <button id="login-text" href="javascript:{}" onclick="document.getElementById('login_form').submit();">로그인</button>
+                </form>
+            </div>
+            <div  th:if="${not #strings.isEmpty(nickname)}">
+                <form id="logout_form" method="post" action="/members/logout">
+                    <button id="logout-text" href="javascript:{}" onclick="document.getElementById('logout_form').submit();">로그아웃</button>
+                </form>
+            </div>
+        </div>
+
+        <h2>게시글 목록</h2>
+        <p>
+            <span th:if="${#strings.isEmpty(nickname)}">공유하고 싶은 소식을 입력해주세요.</span>
+            <span th:if="${not #strings.isEmpty(nickname)}">[[${nickname}]]님, 공유하고 싶은 소식을 입력해주세요.</span>
+        </p>
+    </div>
+    <div class="button" onclick="location.href='/blogs/write'" style="cursor: pointer">
+        게시글 쓰기
+    </div>
+    <div id="cards-box" class="area-read">
+
+    </div>
+</div>
+</body>
+
+</html>
